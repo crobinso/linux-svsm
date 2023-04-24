@@ -62,6 +62,7 @@ usage() {
 	echo " -bridge       use the specified bridge device for networking"
 	echo " -novirtio     do not use virtio devices"
 	echo " -qemu         qemu binary to use"
+	echo " -svsmcrb      SVSM CRB for vTPM communication"
 	exit 1
 }
 
@@ -243,6 +244,8 @@ while [ -n "$1" ]; do
 		-qemu)          QEMU="$2"
 				shift
 				;;
+		-svsmcrb)       SVSM_CRB="1"
+			        ;;
 		*) 		usage;;
 	esac
 	shift
@@ -424,6 +427,10 @@ fi
 
 # start monitor on pty and named socket 'monitor'
 add_opts "-monitor pty -monitor unix:monitor,server,nowait"
+
+if [ -n "$SVSM_CRB" ]; then
+	add_opts "-device tpm-crb-svsm"
+fi
 
 if [ -n "$BRIDGE" ]; then
 	setup_bridge_network
